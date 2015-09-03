@@ -1,0 +1,64 @@
+.col-xs-12
+  .row
+    %h1.page-header
+      = t(".title")
+
+  - repository_platforms.each do |platform|
+    .row
+      .panel.panel-default
+        .panel-heading
+          %h2
+            = platform
+
+        %table.table.table-hover.table-middle.table-bordered
+          %thead
+            %tr
+              %th.col-xs-6
+                = t(".name")
+              %th.col-xs-2
+                = t(".required")
+              %th.col-xs-2
+                = t(".status")
+              %th.col-xs-2
+                = t(".md5_check")
+
+            %tbody
+            - @repocheck.each do |repo|
+              - if repo.platform == platform
+                %tr
+                - if repo.available?
+                  %td
+                    = link_to(repo.registry["name"], repo.url)
+                  %td
+                    = repo.registry["required"]
+                  %td.success
+                    %i.glyphicon.glyphicon-ok
+                    = t(".available")
+                - else
+                  %td
+                    .span.text-muted
+                      = repo.registry["name"]
+                  %td
+                    .text-muted
+                      = repo.registry["required"]
+                  - if repo.registry["required"] == "mandatory"
+                    %td{ class: repository_availability(repo.registry["required"]) }
+                      %i.glyphicon.glyphicon-remove
+                      = t(".unavailable")
+                  - else
+                    %td{ class: repository_availability(repo.registry["required"]) }
+                      .text-muted
+                        = t(".unavailable")
+                - if repo.valid_key_file?
+                  %td.success
+                    %i.glyphicon.glyphicon-ok
+                    = t(".md5_ok")
+                - else
+                  - if repo.registry["required"] == "mandatory"
+                    %td{ class: repository_availability(repo.registry["required"]) }
+                      %i.glyphicon.glyphicon-remove
+                      = t(".md5_failed")
+                  - else
+                    %td{ class: repository_availability(repo.registry["required"]) }
+                      .text-muted
+                        = t(".unavailable")

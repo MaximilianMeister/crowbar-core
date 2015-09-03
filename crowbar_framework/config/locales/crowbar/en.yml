@@ -530,6 +530,18 @@ en:
       two_words_connector: ' and '
       last_word_connector: ' and '
 
+  repositories:
+    index:
+      title: 'Repositories'
+      name: 'Repository Name'
+      required: 'Required'
+      status: 'Status'
+      available: 'Available'
+      unavailable: 'n/a'
+      md5_check: 'MD5 Check'
+      md5_ok: 'OK'
+      md5_failed: 'FAILED'
+
   # Global
   overview: 'Overview'
   show: 'View'
