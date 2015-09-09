@@ -4,7 +4,7 @@ suse-12.0:
     sles12-pool:
       name: "SLES12-Pool"
       required: "mandatory"
-      product_name:
+      product_name: "common"
       content_key:
       repomd:
         key:
@@ -16,7 +16,7 @@ suse-12.0:
     sles12-updates:
       name: "SLES12-Updates"
       required: "recommended"
-      product_name:
+      product_name: "common"
       content_key:
       repomd:
         key:
@@ -28,7 +28,7 @@ suse-12.0:
     suse-openstack-cloud-6-pool:
       name: "SUSE-Openstack-Cloud-6-Pool"
       required: "optional"
-      product_name:
+      product_name: "cloud"
       content_key:
       repomd:
         key:
@@ -40,7 +40,7 @@ suse-12.0:
     suse-openstack-cloud-6-updates:
       name: "SUSE-Openstack-Cloud-6-Updates"
       required: "optional"
-      product_name:
+      product_name: "cloud"
       content_key:
       repomd:
         key:
@@ -52,7 +52,7 @@ suse-12.0:
     sle12-ha-pool:
       name: "SLE12-HA-Pool"
       required: "optional"
-      product_name:
+      product_name: "hae"
       content_key:
       repomd:
         key:
@@ -64,7 +64,7 @@ suse-12.0:
     sle12-ha-updates:
       name: "SLE12-HA-Updates"
       required: "optional"
-      product_name:
+      product_name: "hae"
       content_key:
       repomd:
         key:
@@ -76,7 +76,7 @@ suse-12.0:
     suse-enterprise-storage-1.0-pool:
       name: "SUSE-Enterprise-Storage-1.0-Pool"
       required: "optional"
-      product_name:
+      product_name: "storage"
       content_key:
       repomd:
         key:
@@ -88,7 +88,7 @@ suse-12.0:
     suse-enterprise-storage-1.0-updates:
       name: "SUSE-Enterprise-Storage-1.0-Updates"
       required: "optional"
-      product_name:
+      product_name: "storage"
       content_key:
       repomd:
         key:
