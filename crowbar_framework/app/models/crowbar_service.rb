@@ -183,9 +183,15 @@ class CrowbarService < ServiceObject
     answer = super
     @logger.debug("Crowbar apply_role: super apply_role finished")
 
+    role_object = role.clone
     role = role.default_attributes
     @logger.debug("Crowbar apply_role: create initial instances")
     unless role["crowbar"].nil? or role["crowbar"]["instances"].nil?
+      # write rails.root to the attributes
+      # this is needed for the repository checks in provisioner
+      role_object.default_attributes["rails"] = { root: Rails.root.to_path }
+      role_object.save
+
       ordered_bcs = order_instances role["crowbar"]["instances"]
 #      role["crowbar"]["instances"].each do |k,plist|
       ordered_bcs.each do |k, plist |
