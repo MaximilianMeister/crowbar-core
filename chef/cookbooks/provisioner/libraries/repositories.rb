@@ -76,13 +76,7 @@ class Provisioner
       # used on nodes; optional repos (such as HA) will only be returned if
       # they can be used.
       def get_repos(provisioner_server_node, platform, version)
-        require "#{node.rails.root}/lib/crowbar/repository"
-
-        repos = {}
-        Crowbar::Repository.where(platform: "#{platform}-#{version}").each do |repo|
-          repos[repo.registry["name"]] = { url: repo.url }
-        end
-        repos
+        Crowbar::API.repositories
       end
     end
   end

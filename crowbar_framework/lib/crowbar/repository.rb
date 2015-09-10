@@ -114,6 +114,7 @@ module Crowbar
       @platform = platform
       @id = repo
       @registry = Repository.registry[@platform]["repos"][@id]
+      @url = url
     end
 
     #
