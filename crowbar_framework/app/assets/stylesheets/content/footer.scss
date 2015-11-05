@@ -37,8 +37,8 @@ footer {
 }
 
 .bottom-line {
-  @include gradient-horizontal(#3f2c50, #502c4f, 0%, 90%);
-  background: #2d2c50;
+  @include gradient-horizontal(#2b9a9b, #40b178, 0%, 90%);
+  background: #1fad7a;
   bottom: 0;
   height: 7px;
   margin-top: 10px;
