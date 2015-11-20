@@ -60,6 +60,18 @@ module Crowbar
               "/etc/resolv.conf"
             ],
             [
+              "etc/client.pem",
+              "/etc/chef/client.pem"
+            ],
+            [
+              "etc/webui.pem",
+              "/etc/chef/webui.pem"
+            ],
+            [
+              "etc/validation.pem",
+              "/etc/chef/validation.pem"
+            ],
+            [
               "root/.gnupg",
               "/root/.gnupg"
             ],
