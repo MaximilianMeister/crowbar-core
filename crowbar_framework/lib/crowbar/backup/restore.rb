@@ -54,11 +54,15 @@ module Crowbar
         Crowbar::Backup::Base.restore_files.each do |source, destionation|
           FileUtils.cp_r(@data.join("crowbar", source), destionation)
         end
+
+        Crowbar::Installer.install!
+        sleep(1) until Crowbar::Installer.successful? || Crowbar::Installer.failed?
+        return false if Crowbar::Installer.failed?
       end
 
       def database
         SerializationHelper::Base.new(YamlDb::Helper).load(
-          @data.join("crowbar", "database.yml")
+          @data.join("crowbar", "production.yml")
         )
         Crowbar::Migrate.migrate!
       end
