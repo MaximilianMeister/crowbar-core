@@ -57,7 +57,8 @@ class Backup
 
   def restore
     upgrade if upgrade?
-    return false unless data_valid?
+    ret = data_valid?
+    return ret unless ret[:status] == :ok
     Crowbar::Backup::Restore.new(self).restore
   end
 
@@ -88,7 +89,16 @@ class Backup
 
   def upgrade
     upgrade = Crowbar::Upgrade.new(self)
-    upgrade.upgrade if upgrade.supported?
+    if upgrade.supported?
+      upgrade.upgrade
+    else
+      return {
+        status: :not_acceptable,
+        msg: I18n.t(
+          "backup.index.upgrade_not_supported"
+        )
+      }
+    end
   end
 
   class << self
