@@ -109,15 +109,15 @@ module Crowbar
         end
 
         self.class.export_files.each do |filemap|
-          destination, source = filemap
-          if destination =~ /resolv.conf/
-            data_dir.join(source).open("w") do |file|
+          source, destination = filemap
+          if source =~ /resolv.conf/
+            data_dir.join(destination).open("w") do |file|
               forwarders.each do |forwarder|
                 file.write("nameserver #{forwarder}")
               end
             end
           else
-            FileUtils.cp_r(destination, data_dir.join(source))
+            FileUtils.cp_r(source, data_dir.join(destination))
           end
         end
 
