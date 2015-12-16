@@ -51,8 +51,14 @@ module Crowbar
       end
 
       def crowbar
-        Crowbar::Backup::Base.restore_files.each do |source, destionation|
-          FileUtils.cp_r(@data.join("crowbar", source), destionation)
+        Crowbar::Backup::Base.restore_files.each do |source, destination|
+          # keep the permissions of the files that are already in place
+          system(
+            "sudo", "-i",
+            "cp", "-r", "--no-preserve=mode,ownership",
+            @data.join("crowbar", source).to_s,
+            destination
+          )
         end
 
         Crowbar::Installer.install!

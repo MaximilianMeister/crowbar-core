@@ -117,7 +117,10 @@ module Crowbar
               end
             end
           else
-            FileUtils.cp_r(source, data_dir.join(destination))
+            # copy files with higher permissions
+            dest = data_dir.join(destination).to_s
+            system("sudo", "-i", "cp", "-r", source, dest)
+            system("sudo", "-i", "chown", "-R", "crowbar:crowbar", source, dest)
           end
         end
 
