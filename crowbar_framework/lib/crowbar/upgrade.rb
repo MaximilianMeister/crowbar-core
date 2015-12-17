@@ -26,6 +26,7 @@ module Crowbar
 
     def upgrade
       knife_files
+      crowbar_files
     end
 
     def supported?
@@ -60,6 +61,10 @@ module Crowbar
         file_content.gsub!("bc-", "")
         File.open(crowbar_databags_path.join(new_file), "w") { |content| content.puts file_content }
       end
+    end
+
+    def crowbar_files
+      FileUtils.touch(@data.join("crowbar", "production.yml"))
     end
   end
 end
