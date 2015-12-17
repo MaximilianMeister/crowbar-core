@@ -165,7 +165,7 @@ class Backup
       ar = Archive::Compress.new(
         self.class.image_dir.join("#{name}-#{created_at}.tar.gz").to_s,
         type: :tar,
-        compression: :gzip2
+        compression: :gzip
       )
       ar.compress(Find.find(".").select { |f| f.gsub!(/^.\//, "") if File.file?(f) })
       saved = true
