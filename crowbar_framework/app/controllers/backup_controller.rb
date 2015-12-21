@@ -105,7 +105,7 @@ class BackupController < ApplicationController
         format.any do
           send_file(
             @backup.path,
-            filename: "#{params[:name]}-#{params[:created_at]}.tar.gz"
+            filename: @backup.filename
           )
         end
       else
