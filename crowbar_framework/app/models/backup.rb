@@ -52,7 +52,11 @@ class Backup
   end
 
   def size
-    path.size if path.file?
+    if path.file?
+      path.size
+    else
+      0
+    end
   end
 
   def upload(file)
