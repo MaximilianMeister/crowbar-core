@@ -26,7 +26,7 @@
           %td
             = backup.name
           %td
-            = l(date_parse(backup.created_at), format: :long)
+            = l(DateTime.strptime(backup.created_at, "%Y%m%d-%H%M%S"), format: :long)
           %td
             = number_to_human_size(backup.size)
           %td
