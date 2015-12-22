@@ -30,6 +30,7 @@ module Crowbar
           ret = send(component)
           return ret unless ret == true
         end
+        { status: :ok, msg: "" }
       end
 
       protected
@@ -48,6 +49,7 @@ module Crowbar
           bc_name = file.basename.to_s.split("-").first
           Proposal.create(barclamp: bc_name, name: "default", properties: json)
         end
+        true
       end
 
       def crowbar
@@ -69,6 +71,7 @@ module Crowbar
             msg: I18n.t(".installation_failed", scope: "installers.status")
           }
         end
+        true
       end
 
       def database
@@ -76,6 +79,7 @@ module Crowbar
           @data.join("crowbar", "production.yml")
         )
         Crowbar::Migrate.migrate!
+        true
       end
     end
   end
