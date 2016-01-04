@@ -14,11 +14,12 @@
 # limitations under the License.
 #
 
-class BackupController < ApplicationController
+class BackupsController < ApplicationController
   skip_before_filter :enforce_installer
+  before_action :set_backup, only: [:destroy, :restore, :download]
 
   #
-  # Backup
+  # Backups
   #
   # Provides the restful api call for
   # /utils/backup 	GET 	Returns a json list of available backups
@@ -32,24 +33,23 @@ class BackupController < ApplicationController
   end
 
   #
-  # Backup
+  # Backups
   #
   # Provides the restful api call for
   # /utils/backup   POST   Trigger a backup
-  def backup
-    @backup = Backup.new(
-      name: params[:filename]
-    )
+  def create
+    @backup = Backup.new(backup_params)
+
     respond_to do |format|
       if @backup.save
         format.json { head :ok }
-        format.html { redirect_to backup_path }
+        format.html { redirect_to backups_path }
       else
         msg = I18n.t(".invalid_filename", scope: "backup.index")
         format.json { render json: { error: msg } }
         format.html do
           flash[:alert] = msg
-          redirect_to backup_path
+          redirect_to backups_path
         end
       end
     end
@@ -61,21 +61,16 @@ class BackupController < ApplicationController
   # Provides the restful api call for
   # /utils/backup/restore   POST   Trigger a restore
   def restore
-    @backup = Backup.new(
-      name: params[:name],
-      created_at: params[:created_at]
-    )
-
     respond_to do |format|
       if @backup.valid?
         ret = @backup.restore
         if ret[:status] == :ok
           format.json { head :ok }
-          format.html { redirect_to backup_path }
+          format.html { redirect_to backups_path }
         else
           format.html do
             flash[:alert] = ret[:msg]
-            redirect_to backup_path
+            redirect_to backups_path
           end
           format.json { render json: ret[:msg] }
         end
@@ -84,7 +79,7 @@ class BackupController < ApplicationController
         format.json { render json: { error: msg } }
         format.html do
           flash[:alert] = msg
-          redirect_to backup_path
+          redirect_to backups_path
         end
       end
     end
@@ -96,10 +91,6 @@ class BackupController < ApplicationController
   # Provides the restful api call for
   # /utils/backup/download/:name/:created_at 	GET 	Download a backup
   def download
-    @backup = Backup.new(
-      name: params[:name],
-      created_at: params[:created_at]
-    )
     respond_to do |format|
       if @backup.exist?
         format.any do
@@ -113,7 +104,7 @@ class BackupController < ApplicationController
         format.json { render json: { error: msg } }
         format.html do
           flash[:alert] = msg
-          redirect_to backup_path
+          redirect_to backups_path
         end
       end
     end
@@ -125,51 +116,53 @@ class BackupController < ApplicationController
   # Provides the restful api call for
   # /utils/backup/upload   POST   Upload a backup
   def upload
-    file = params[:upload]
-    filename, created_at = Backup.filename_time(file.original_filename)
-    @backup = Backup.new(
-      name: filename,
-      created_at: created_at
-    )
+    @backup = Backup.new(backup_upload_params)
 
     respond_to do |format|
-      if @backup.valid?
-        @backup.upload(file)
-
+      if @backup.save
         format.json { head :ok }
-        format.html { redirect_to backup_path }
+        format.html { redirect_to backups_path }
       else
-        format.json { render json: { error: @backup.errors } }
+        format.json { render json: { error: @backup.errors.full_messages.first } }
         format.html do
           flash[:alert] = @backup.errors
-          redirect_to backup_path
+          redirect_to backups_path
         end
       end
     end
   end
 
   #
-  # Delete Backup
+  # Delete Backups
   #
   # Provides the restful api call for
   # data-confirm method delete
-  # /utils/backup/delete 	DELETE 	Delete a backup
-  def delete
-    @backup = Backup.new(
-      name: params[:name],
-      created_at: params[:created_at]
-    )
-
+  # /utils/backup/destroy 	DELETE 	Delete a backup
+  def destroy
     respond_to do |format|
       if @backup.valid?
         @backup.delete
 
         format.json { head :ok }
-        format.html { redirect_to backup_path }
+        format.html { redirect_to backups_path }
       else
         format.json { render json: { error: @backup.errors } }
         format.html { flash[:alert] = @backup.errors }
       end
     end
+  end
+
+  protected
+
+  def set_backup
+    @backup = Backup.find(params[:id])
+  end
+
+  def backup_params
+    params.require(:backup).permit(:name)
+  end
+
+  def backup_upload_params
+    params.permit(:file)
   end
 end

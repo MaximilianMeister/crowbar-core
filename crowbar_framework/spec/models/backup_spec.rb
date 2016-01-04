@@ -30,12 +30,11 @@ describe Backup do
       end
 
       context "not valid" do
-        it "has an invalid timestamp" do
-          [nil, ""].each do |timestamp|
-            bu = Backup.new(name: "testbackup", created_at: timestamp)
-            allow_any_instance_of(Crowbar::Backup::Export).to receive(:export).and_return(true)
-            expect(bu.save).to be false
-          end
+        it "already exists" do
+          allow_any_instance_of(Crowbar::Backup::Export).to receive(:export).and_return(true)
+          Backup.new(name: "testbackup", created_at: created_at).save
+          bu = Backup.new(name: "testbackup", created_at: created_at)
+          expect(bu.save).to be false
         end
 
         it "has an invalid filename" do
