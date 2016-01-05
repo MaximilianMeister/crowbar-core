@@ -46,7 +46,7 @@ class BackupsController < ApplicationController
         format.html { redirect_to backups_path }
       else
         msg = I18n.t(".invalid_filename", scope: "backup.index")
-        format.json { render json: { error: msg } }
+        format.json { render json: { error: msg }, status: :bad_request }
         format.html do
           flash[:alert] = msg
           redirect_to backups_path
@@ -72,11 +72,11 @@ class BackupsController < ApplicationController
             flash[:alert] = ret[:msg]
             redirect_to backups_path
           end
-          format.json { render json: ret[:msg] }
+          format.json { render json: { error: ret[:msg] }, status: :bad_request }
         end
       else
         msg = I18n.t(".invalid_backup", scope: "backup.index")
-        format.json { render json: { error: msg } }
+        format.json { render json: { error: msg }, status: :bad_request }
         format.html do
           flash[:alert] = msg
           redirect_to backups_path
@@ -101,7 +101,7 @@ class BackupsController < ApplicationController
         end
       else
         msg = I18n.t(".missing_backup", scope: "backup.index")
-        format.json { render json: { error: msg } }
+        format.json { render json: { error: msg }, status: :bad_request }
         format.html do
           flash[:alert] = msg
           redirect_to backups_path
@@ -123,7 +123,7 @@ class BackupsController < ApplicationController
         format.json { head :ok }
         format.html { redirect_to backups_path }
       else
-        format.json { render json: { error: @backup.errors.full_messages.first } }
+        format.json { render json: { error: @backup.errors.full_messages.first }, status: :bad_request }
         format.html do
           flash[:alert] = @backup.errors
           redirect_to backups_path
@@ -146,7 +146,7 @@ class BackupsController < ApplicationController
         format.json { head :ok }
         format.html { redirect_to backups_path }
       else
-        format.json { render json: { error: @backup.errors } }
+        format.json { render json: { error: @backup.errors }, status: :bad_request }
         format.html { flash[:alert] = @backup.errors }
       end
     end
