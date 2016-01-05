@@ -129,7 +129,7 @@ module Crowbar
       def meta
         meta = Hash.new
         meta["version"] = ENV["CROWBAR_VERSION"]
-        meta["created_at"] = Time.now.to_s
+        meta["created_at"] = Time.zone.now.to_s
 
         workdir.join("crowbar").join("meta.yml").open("w") do |file|
           file.write(meta.to_yaml)

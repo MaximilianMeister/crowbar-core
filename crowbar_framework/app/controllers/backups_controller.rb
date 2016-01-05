@@ -45,7 +45,7 @@ class BackupsController < ApplicationController
         format.json { head :ok }
         format.html { redirect_to backups_path }
       else
-        msg = I18n.t(".invalid_filename", scope: "backup.index")
+        msg = I18n.t(".invalid_filename", scope: "backups.index")
         format.json { render json: { error: msg }, status: :bad_request }
         format.html do
           flash[:alert] = msg
@@ -75,7 +75,7 @@ class BackupsController < ApplicationController
           format.json { render json: { error: ret[:msg] }, status: :bad_request }
         end
       else
-        msg = I18n.t(".invalid_backup", scope: "backup.index")
+        msg = I18n.t(".invalid_backup", scope: "backups.index")
         format.json { render json: { error: msg }, status: :bad_request }
         format.html do
           flash[:alert] = msg
@@ -100,7 +100,7 @@ class BackupsController < ApplicationController
           )
         end
       else
-        msg = I18n.t(".missing_backup", scope: "backup.index")
+        msg = I18n.t(".missing_backup", scope: "backups.index")
         format.json { render json: { error: msg }, status: :bad_request }
         format.html do
           flash[:alert] = msg
