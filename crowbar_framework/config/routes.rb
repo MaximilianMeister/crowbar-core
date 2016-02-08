@@ -151,6 +151,15 @@ Rails.application.routes.draw do
       end
     end
 
+    resource :restore,
+      only: [:show],
+      controller: "installer/restores" do
+      member do
+        get :restore
+        post :restore
+      end
+    end
+
     resource :upgrade,
       only: [:show],
       controller: "installer/upgrades" do

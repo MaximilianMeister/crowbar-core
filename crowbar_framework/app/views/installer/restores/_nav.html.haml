@@ -1,0 +1,12 @@
+%ul.nav.nav-stacked.wizard-nav.col-lg-3
+  %li{ class: active == :start ? "active" : nil }
+    %a
+      .pull-right
+        = icon_tag :chevron_right, nil, class: "fa-fw"
+      = "Upload"
+
+  %li{ class: active == :restore ? "active" : nil }
+    %a
+      .pull-right
+        = icon_tag :chevron_right, nil, class: "fa-fw"
+      = "Restore"

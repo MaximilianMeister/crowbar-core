@@ -32,7 +32,8 @@ module Crowbar
         Thread.new do
           self.class.steps.each do |component|
             set_step(component)
-            send(component)
+            #send(component)
+            sleep 5
             return @status && cleanup && Thread.exit if any_errors?
             # set_failed is called directly after the fail
             if component == :restore_database && !self.class.failed_path.exist?

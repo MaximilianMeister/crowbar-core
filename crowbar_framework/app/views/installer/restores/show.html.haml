@@ -4,29 +4,27 @@
       .panel.panel-default
         .panel-heading
           %h2
-            Restore
+            Restore from Backup
 
         .panel-plain.wizard
-          = render partial: "nav", locals: { active: :start }
+          = render partial: "nav", locals: { active: :restore }
 
           .wizard-body.col-lg-9
             %h2
-              = t(".header")
+              Header
 
             %p
-              = t(".description")
-
-            %p
-              = file_field_tag "file"
+              Description
 
         .panel-footer
           .row
-            .col-lg-3
-              = progress_steps @current_step, @min_step, @max_step
-
             .col-lg-9.text-right
               .btn-group{ role: "group" }
-                = link_to icon_tag(:chevron_left, t(".cancel")),
+                = link_to icon_tag(:chevron_left, "Cancel"),
                   installer_root_path,
                   class: "btn btn-default"
-                = continue_button
+                = link_to icon_tag(:chevron_right, "Restore"),
+                  restore_restore_path,
+                  class: "btn btn-primary"
+
+= javascript_include_tag :upgrades
