@@ -1199,8 +1199,7 @@ class NodeObject < ChefObject
 
   def ssh_cmd(cmd)
     if @node[:platform_family] == "windows"
-      # add I18n
-      Rails.logger.warn("ssh command \"#{cmd}\" for #{@node.name} ignored - node is running Windows")
+      Rails.logger.warn(I18n.t("model.node.windows_ssh_cmd", cmd: cmd, node: @node.name))
       return [400, I18n.t("running_windows", scope: "error")]
     end
 
@@ -1212,7 +1211,7 @@ class NodeObject < ChefObject
                   "timeout", "-k", "5s", "15s",
                   "ssh", "-o", "ConnectTimeout=10", "root@#{@node.name}",
                   "#{cmd} </dev/null >/dev/null 2>&1 &")
-      Rails.logger.warn("ssh command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
+      Rails.logger.warn(I18n.t("model.node.ssh_cmd_failed", cmd: cmd, name: @node.name) + " - " + I18n.t("error.unknown_state"))
       return [422, I18n.t("unknown_state", scope: "error")]
     end
 
@@ -1228,22 +1227,22 @@ class NodeObject < ChefObject
       end
     when :power_off
       unless system("net", "rpc", "shutdown", "-f", "-I", @node.name ,"-U", "Administrator%#{@node[:provisioner][:windows][:admin_password]}")
-        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
+        Rails.logger.warn(I18n.t("model.node.samba_cmd_failed", cmd: cmd, name: @node.name) + " - " + I18n.t("error.unknown_state"))
         [422, I18n.t("unknown_state", scope: "error")]
       end
     when :reboot
       unless system("net", "rpc", "shutdown", "-r", "-I", @node.name ,"-U", "Administrator%#{@node[:provisioner][:windows][:admin_password]}")
-        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
+        Rails.logger.warn(I18n.t("model.node.samba_cmd_failed", cmd: cmd, name: @node.name) + " - " + I18n.t("error.unknown_state"))
         [422, I18n.t("unknown_state", scope: "error")]
       end
     when :shutdown
       unless system("net", "rpc", "shutdown", "-I", @node.name ,"-U", "Administrator%#{@node[:provisioner][:windows][:admin_password]}")
-        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
+        Rails.logger.warn(I18n.t("model.node.samba_cmd_failed", cmd: cmd, name: @node.name) + " - " + I18n.t("error.unknown_state"))
         [422, I18n.t("unknown_state", scope: "error")]
       end
     else
-      Rails.logger.warn("Unknown command #{cmd} for #{@node.name}.")
-      [400, I18n.t("unknown_cmd", scope: "error", cmd: cmd)]
+      Rails.logger.warn(I18n.t("error.unknown_cmd", cmd: cmd, node: @node.name)
+      [400, I18n.t("error.unknown_cmd", cmd: cmd, node: @node.name)]
     end
   end
 
@@ -1256,10 +1255,10 @@ class NodeObject < ChefObject
       when "power off"
         ssh_command = "/sbin/poweroff -f"
       else
-        Rails.logger.warn("ipmitool #{cmd} failed for #{@node.name}.")
-        return [422, I18n.t("ipmi_failed", scope: "error", cmd: cmd, node: @node.name)]
+        Rails.logger.warn(I18n.t("error.ipmi_failed", cmd: cmd, node: @node.name)
+        return [422, I18n.t("error.ipmi_failed", cmd: cmd, node: @node.name)]
       end
-      Rails.logger.warn("failed ipmitool #{cmd}, falling back to ssh for #{@node.name}")
+      Rails.logger.warn(I18n.t("error.ipmi_ssh_fallback", cmd: cmd, node: @node.name))
       return ssh_cmd(ssh_command)
     end
 
