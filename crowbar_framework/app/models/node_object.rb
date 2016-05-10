@@ -1199,6 +1199,7 @@ class NodeObject < ChefObject
 
   def ssh_cmd(cmd)
     if @node[:platform_family] == "windows"
+      # add I18n
       Rails.logger.warn("ssh command \"#{cmd}\" for #{@node.name} ignored - node is running Windows")
       return [400, I18n.t("running_windows", scope: "error")]
     end
@@ -1211,7 +1212,7 @@ class NodeObject < ChefObject
                   "timeout", "-k", "5s", "15s",
                   "ssh", "-o", "ConnectTimeout=10", "root@#{@node.name}",
                   "#{cmd} </dev/null >/dev/null 2>&1 &")
-      Rails.logger.warn("ssh command \"#{cmd}\" for #{@node.name} failed - node in unknown state")
+      Rails.logger.warn("ssh command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
       return [422, I18n.t("unknown_state", scope: "error")]
     end
 
@@ -1222,22 +1223,22 @@ class NodeObject < ChefObject
     case cmd
     when :power_cycle
       unless system("net", "rpc", "shutdown", "-f", "-r", "-I", @node.name ,"-U", "Administrator%#{@node[:provisioner][:windows][:admin_password]}")
-        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - node in unknown state")
+        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
         [422, I18n.t("unknown_state", scope: "error")]
       end
     when :power_off
       unless system("net", "rpc", "shutdown", "-f", "-I", @node.name ,"-U", "Administrator%#{@node[:provisioner][:windows][:admin_password]}")
-        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - node in unknown state")
+        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
         [422, I18n.t("unknown_state", scope: "error")]
       end
     when :reboot
       unless system("net", "rpc", "shutdown", "-r", "-I", @node.name ,"-U", "Administrator%#{@node[:provisioner][:windows][:admin_password]}")
-        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - node in unknown state")
+        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
         [422, I18n.t("unknown_state", scope: "error")]
       end
     when :shutdown
       unless system("net", "rpc", "shutdown", "-I", @node.name ,"-U", "Administrator%#{@node[:provisioner][:windows][:admin_password]}")
-        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - node in unknown state")
+        Rails.logger.warn("samba command \"#{cmd}\" for #{@node.name} failed - #{I18n.t("error.unknown_state")}")
         [422, I18n.t("unknown_state", scope: "error")]
       end
     else
