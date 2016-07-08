@@ -246,6 +246,29 @@ Rails.application.routes.draw do
       resource :crowbar, only: [:show, :update] do
         post :upgrade
         get :repocheck
+
+        resources :backups,
+          only: [:index, :create, :destroy] do
+          collection do
+            post :upload
+            get :restore_status
+          end
+
+          member do
+            post :restore
+            get :download
+          end
+        end
+      end
+
+      resources :nodes, only: [:index, :show, :update] do
+        collection do
+          post :upgrade
+        end
+
+        member do
+          get :maintenance
+        end
       end
     end
   end
