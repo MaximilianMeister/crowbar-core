@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-class BackupsController < ApplicationController
+class Api::V2::BackupsController < ApplicationController
   skip_before_filter :enforce_installer
   before_action :set_backup, only: [:destroy, :restore, :download]
 
-  api :GET, "/utils/backups", "Returns a list of available backups"
+  api :GET, "/api/v2/crowbar/backups", "Returns a list of available backups"
   def index
-    @backups = Api::V2::Crowbar::Backup.all
+    render json: Api::V2::Crowbar::Backup.all
   end
 
-  api :POST, "/utils/backups", "Create a backup"
+  api :POST, "/api/v2/crowbar/backups", "Create a backup"
   param :backup, Hash, desc: "Backup info" do
     param :name, String, desc: "Name of the backup", required: true
   end
@@ -31,28 +31,25 @@ class BackupsController < ApplicationController
     @backup = Api::V2::Crowbar::Backup.new(backup_params)
 
     if @backup.save
-      redirect_to backups_path
+      head :ok
     else
-      flash[:alert] = @backup.errors.full_messages.first
-      redirect_to backups_path
+      render json: { error: @backup.errors.full_messages.first }, status: :unprocessable_entity
     end
   ensure
     @backup.cleanup unless @backup.nil?
   end
 
-  api :POST, "/utils/backups/:id/restore", "Restore a backup"
+  api :POST, "/api/v2/crowbar/backups/:id/restore", "Restore a backup"
   param :id, Integer, desc: "Backup ID", required: true
   def restore
-    if @backup.restore(background: false)
-      flash[:success] = I18n.t("backups.index.restore_successful")
-      redirect_to dashboard_index_url
+    if @backup.restore(background: true)
+      head :ok
     else
-      flash[:alert] = @backup.errors.full_messages.first
-      redirect_to backups_url
+      render json: { error: @backup.errors.full_messages.first }, status: :unprocessable_entity
     end
   end
 
-  api :GET, "/utils/backups/:id/download", "Download a backup"
+  api :GET, "/api/v2/crowbar/backups/:id/download", "Download a backup"
   param :id, Integer, desc: "Backup ID", required: true
   def download
     if @backup.path.exist?
@@ -61,12 +58,11 @@ class BackupsController < ApplicationController
         filename: @backup.filename
       )
     else
-      flash[:alert] = @backup.errors.full_messages.first
-      redirect_to backups_path
+      render json: { error: @backup.errors.full_messages.first }, status: :not_found
     end
   end
 
-  api :POST, "/utils/backups/upload", "Upload a backup"
+  api :POST, "/api/v2/crowbar/backups/upload", "Upload a backup"
   param :backup, Hash, desc: "Backup info" do
     param :file, File, desc: "Backup for upload", required: true
   end
@@ -74,24 +70,29 @@ class BackupsController < ApplicationController
     @backup = Api::V2::Crowbar::Backup.new(backup_upload_params)
 
     if @backup.save
-      redirect_to backups_path
+      head :ok
     else
-      flash[:alert] = @backup.errors.full_messages.first
-      redirect_to backups_path
+      render json: { error: @backup.errors.full_messages.first }, status: :unprocessable_entity
     end
   ensure
     @backup.cleanup unless @backup.nil?
   end
 
-  api :DELETE, "/utils/backups/:id", "Delete a backup"
+  api :DELETE, "/api/v2/crowbar/backups/:id", "Delete a backup"
   param :id, Integer, "Backup ID", required: true
   def destroy
     if @backup.destroy
-      redirect_to backups_path
+      head :ok
     else
-      flash[:alert] = I18n.t("backups.destroy.failed")
-      redirect_to backups_path
+      render json: {
+        error: I18n.t("backups.destroy.failed")
+      }, status: :unprocessable_entity
     end
+  end
+
+  api :GET, "/api/v2/crowbar/backups/restore_status", "Returns status of backup restoration"
+  def restore_status
+    render json: Crowbar::Backup::Restore.status
   end
 
   protected
@@ -105,6 +106,6 @@ class BackupsController < ApplicationController
   end
 
   def backup_upload_params
-    params.require(:backup).permit(:file)
+    params.require(:api_v2_crowbar_backup).permit(:file)
   end
 end
