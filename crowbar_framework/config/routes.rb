@@ -243,6 +243,10 @@ Rails.application.routes.draw do
 
   namespace :api, constraints: { format: :json } do
     namespace :v2 do
+      resource :upgrade, only: [:show, :update] do
+        post :prepare
+      end
+
       resource :crowbar, only: [:show, :update] do
         post :upgrade
         get :repocheck
