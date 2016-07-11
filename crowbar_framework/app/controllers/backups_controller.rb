@@ -20,7 +20,7 @@ class BackupsController < ApplicationController
 
   api :GET, "/utils/backups", "Returns a list of available backups"
   def index
-    @backups = Api::V2::Crowbar::Backup.all
+    @backups = Api::V2::Backup.all
   end
 
   api :POST, "/utils/backups", "Create a backup"
@@ -28,7 +28,7 @@ class BackupsController < ApplicationController
     param :name, String, desc: "Name of the backup", required: true
   end
   def create
-    @backup = Api::V2::Crowbar::Backup.new(backup_params)
+    @backup = Api::V2::Backup.new(backup_params)
 
     if @backup.save
       redirect_to backups_path
@@ -66,23 +66,6 @@ class BackupsController < ApplicationController
     end
   end
 
-  api :POST, "/utils/backups/upload", "Upload a backup"
-  param :backup, Hash, desc: "Backup info" do
-    param :file, File, desc: "Backup for upload", required: true
-  end
-  def upload
-    @backup = Api::V2::Crowbar::Backup.new(backup_upload_params)
-
-    if @backup.save
-      redirect_to backups_path
-    else
-      flash[:alert] = @backup.errors.full_messages.first
-      redirect_to backups_path
-    end
-  ensure
-    @backup.cleanup unless @backup.nil?
-  end
-
   api :DELETE, "/utils/backups/:id", "Delete a backup"
   param :id, Integer, "Backup ID", required: true
   def destroy
@@ -97,14 +80,10 @@ class BackupsController < ApplicationController
   protected
 
   def set_backup
-    @backup = Api::V2::Crowbar::Backup.find_using_id_or_name!(params[:id])
+    @backup = Api::V2::Backup.find_using_id_or_name!(params[:id])
   end
 
   def backup_params
-    params.require(:api_v2_crowbar_backup).permit(:name)
-  end
-
-  def backup_upload_params
-    params.require(:backup).permit(:file)
+    params.require(:api_v2_backup).permit(:name)
   end
 end

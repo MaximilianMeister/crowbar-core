@@ -114,10 +114,6 @@ Rails.application.routes.draw do
 
     resources :backups,
       only: [:index, :create, :destroy] do
-      collection do
-        post :upload
-        get :restore_status
-      end
 
       member do
         post :restore
