@@ -40,11 +40,34 @@ class Provisioner
           repositories[repo["name"]] = {
             url: repo["url"],
             ask_on_error: repo["ask_on_error"] || false,
-            priority: repo["priority"] || 99
+            priority: repo["priority"] || 99,
+            purge: repo["purge"] || false
           }
         end
 
         repositories
+      end
+
+      def all_repos_purged?(platform, version, arch)
+        repos = get_repos(platform, version, arch).select { |_k, v| v[:purge] }
+
+        # empty repos means we need to return false as no repos have been marked yet for purging
+        return false if repos.empty?
+
+        repos.each_pair do |k, _v|
+          return false if zypper_repo_active?(k)
+        end
+
+        true
+      end
+
+      def zypper_repo_active?(repo)
+        Chef::Node.list.keys.each do |node|
+          # TODO: this could maybe be done more elegantly
+          return true if `ssh #{node} "zypper lr"`.include?(repo)
+        end
+
+        false
       end
     end
   end

@@ -323,9 +323,11 @@ module Installer
           false
         )
 
-        Crowbar::Repository.chef_data_bag_destroy(
-          "#{repository.data_bag_name}/#{repository.id}"
-        )
+        data_bag = "#{repository.data_bag_name}/#{repository.id}"
+        # mark the repository as "not needed anymore" for chef to clean it up in the next run
+        db = Chef::DataBag.load(data_bag)
+        db[:purge] = data_bag
+        db.save
       end
     end
 

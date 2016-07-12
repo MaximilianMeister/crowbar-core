@@ -326,6 +326,11 @@ if node[:platform_family] == "suse" && !node.roles.include?("provisioner-server"
       if current_priority != attrs[:priority]
         `zypper --non-interactive modifyrepo --priority #{attrs[:priority]} #{name}`
       end
+      # check if attrs contains the :purge key with the databag name as a value
+      if attrs[:purge]
+        Chef::Log.info("Purging no longer used #{name} zypper repository...")
+        `zypper --non-interactive removerepo #{name}`
+      end
     end
     # install additional packages
     os = "#{node[:platform]}-#{node[:platform_version]}"
@@ -333,6 +338,13 @@ if node[:platform_family] == "suse" && !node.roles.include?("provisioner-server"
       node[:provisioner][:packages][os].each { |p| package p }
     end
   end
+elsif node[:platform_family] == "suse" && \
+    node.roles.include?("provisioner-server") && \
+    Provisioner::Repositories.all_repos_purged?(
+      node[:platform], node[:platform_version], node[:kernel][:machine]
+    )
+  Chef::Log.info("Purging repository data bag #{attrs[:purge]}...")
+  Chef::DataBag.chef_server_rest.delete_rest("data/#{attrs[:purge]}")
 end
 
 aliaz = begin
